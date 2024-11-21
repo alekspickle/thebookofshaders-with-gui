@@ -1,5 +1,5 @@
 ## Set of exercises from generativeartistry.com and my own sketches
-![lines_demo](examples/outputs/lines.png)
+![lines_demo](examples/outputs/rnbw.png)
 
 ### built with [nannou](https://github.com/nannou-org/nannou) and ❤️
 
