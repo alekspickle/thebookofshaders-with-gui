@@ -1,41 +1,62 @@
-use nannou::prelude::*;
-use rand;
+use image::{ImageBuffer, Rgb};
+use std::path::Path;
+
+#[derive(Debug)]
+struct Point2 {
+    x: u32,
+    y: u32,
+}
+
+impl Point2 {
+    fn new(x: u32, y: u32) -> Self {
+        Point2 { x, y }
+    }
+}
 
 fn main() {
-    nannou::sketch(view).run()
+    let mut imgbuf = ImageBuffer::new(5, 5);
+    let step: u32 = 80;
+
+    // Iterate over the coordinates and pixels of the image
+    for (x, y, pixel) in imgbuf.enumerate_pixels_mut() {
+        let r = (0.3 * x as f32) as u8;
+        let b = (0.3 * y as f32) as u8;
+        *pixel = Rgb([r, 0, b]);
+    }
+
+    for x in 0..imgbuf.width() {
+        for y in 0..imgbuf.height() {
+            imgbuf = draw( imgbuf.clone(), x, y, step, step);
+        }
+    }
+
+
+    utils::save_image(imgbuf, Path::new("output/lines.png"));
 }
 
-fn view(app: &App, frame: Frame) {
-    // Begin drawing
-    let draw = app.draw();
-    // Clear the background to blue.
-    draw.background().color(CORNFLOWERBLUE);
-
-    // Get window as Rect.
-    let win = app.window_rect();
-    // Get time as float.
-    let t = app.time;
-
-    // Step
-    let step: f32 = 80.;
-
-    render(&draw, app.mouse.x, app.mouse.y, step, step);
-        
-    // Write the result of our drawing to the window's frame.
-    draw.to_frame(app, &frame).unwrap();
-}
-
-fn render(draw: &Draw, x: f32, y: f32, w: f32, h: f32) {
+fn draw(ib: ImageBuffer<Rgb<u8>, Vec<u8>>, x: u32, y: u32, w: u32, h: u32) -> ImageBuffer<Rgb<u8>, Vec<u8>>{
     // left to right bool
     let left_to_right = rand::random::<f32>();
 
     if left_to_right >= 0.5 {
-        draw.line()
-            .weight(1.)
-            .points(Point2::new(x, y), Point2::new(x + w, y + h));
+        line(Point2::new(x, y), Point2::new(x + w, y + h));
     } else {
-        draw.line()
-            .weight(1.)
-            .points(Point2::new(x, y), Point2::new(y + w, x + h));
+        line(Point2::new(x + w, y), Point2::new(x, y + h));
     }
+}
+
+fn line(p1: Point2, p2: Point2) {
+    // let 
+
+    // // Iterate over the coordinates and pixels of the image
+    // for (x, y, pixel) in imgbuf.enumerate_pixels_mut() {
+    //     let r = (0.3 * x as f32) as u8;
+    //     let b = (0.3 * y as f32) as u8;
+    //     *pixel = Rgb([r, 0, b]);
+    // }
+
+    // // Mutating single pixel
+    // let pixel = imgbuf.get_pixel_mut(x, y);
+    // let data = (*pixel as Rgb<u8>).0;
+    // *pixel = Rgb([data[0], i as u8, data[2]]);
 }
