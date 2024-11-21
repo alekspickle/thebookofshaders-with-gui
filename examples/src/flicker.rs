@@ -26,12 +26,12 @@ fn view(app: &App, frame: Frame) {
         .stroke_weight(5.)
         .stroke_color(MEDIUMSPRINGGREEN);
 
-    for i in 0..50 {
+    for i in -50..50 {
         draw.line().weight(2.).color(MEDIUMSPRINGGREEN).points(
             Point2::new(app.mouse.x, app.mouse.y),
             Point2::new(
-                app.mouse.x + i as f32 * rand::random::<f32>() * 60. * PI,
-                app.mouse.y + i as f32 * rand::random::<f32>() * 60. * PI,
+                app.mouse.x + i as f32 * rand::random::<f32>() * 6. * PI,
+                app.mouse.y - i as f32 * rand::random::<f32>() * 6. * PI,
             ),
         );
     }
