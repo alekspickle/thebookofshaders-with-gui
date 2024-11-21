@@ -95,7 +95,7 @@ fn main() {
                             x - wiggle
                         }
                     };
-                    // println!("R:{x},{y}");
+                    println!("R:{x},{y}");
 
                     (x, y)
                 };

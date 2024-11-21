@@ -16,7 +16,7 @@ fn main() {
     let mut image: Image = ImageBuffer::new(DIM, DIM).into();
     let buf = image.buf_mut();
     let mut rng = rand::thread_rng();
-    let step = rng.gen_range(5, DIM / 3);
+    let step = rng.gen_range(5, DIM / 10);
     println!(
         "Building a maze ({}x{})...\nStep:{}.",
         buf.width(),
@@ -69,6 +69,6 @@ fn main() {
         image.line(&p1.into(), &p2.into());
     }
 
-    utils::save_image(image.into(), Path::new("examples/outputs/lines.png"));
+    utils::save_image(image.into(), Path::new("examples/outputs/maze.png"));
     t.end();
 }
