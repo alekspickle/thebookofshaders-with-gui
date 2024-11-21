@@ -1,15 +1,12 @@
 use image::{ImageBuffer, Rgb};
-use rand::{
-    distributions::{Distribution, Uniform},
-    thread_rng, Rng,
-};
-use std::path::Path;
-use utils::{Image, Line, Point2, Timer};
+use rand::Rng;
+use std::io;
+use utils::{Image, Timer};
 
 const DIM: u32 = 500;
 const NARROW: f32 = 0.3;
 
-fn main() {
+fn main() -> io::Result<()> {
     let t = Timer::new();
 
     let mut image: Image = ImageBuffer::new(DIM, DIM).into();
@@ -111,6 +108,11 @@ fn main() {
         image.line(&p1.into(), &p2.into());
     }
 
-    utils::save_image(image.into(), Path::new("examples/outputs/joy_division.png"));
+    utils::save_image(
+        image.into(),
+        &project_root::get_project_root()?.join("outputs/joy_division.png"),
+    );
     t.end();
+    
+    Ok(())
 }

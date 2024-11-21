@@ -5,12 +5,12 @@
 
 use image::{ImageBuffer, Rgb};
 use rand::Rng;
-use std::path::Path;
+use std::io;
 use utils::{Image, Timer};
 
 const DIM: u32 = 500;
 
-fn main() {
+fn main() -> io::Result<()> {
     let t = Timer::new();
 
     let mut image: Image = ImageBuffer::new(DIM, DIM).into();
@@ -69,6 +69,11 @@ fn main() {
         image.line(&p1.into(), &p2.into());
     }
 
-    utils::save_image(image.into(), Path::new("examples/outputs/maze.png"));
+    utils::save_image(
+        image.into(),
+        &project_root::get_project_root()?.join("outputs/maze.png"),
+    );
     t.end();
+
+    Ok(())
 }
