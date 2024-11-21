@@ -1,4 +1,5 @@
 use nannou::prelude::*;
+use nannou::ui::prelude::*;
 // use rand;
 
 const SCALE: f32 = 0.35;
@@ -6,10 +7,41 @@ const SAMPLES: i32 = 500;
 const ROTATION: f32 = 1.;
 
 fn main() {
-    nannou::sketch(view).run()
+    nannou::app(model).update(update).run();
 }
 
-fn view(app: &App, frame: Frame) {
+struct Model {
+    scale: f32,
+}
+
+fn model(app: &App) -> Model {
+    // Create a window that can receive user input like mouse and keyboard events.
+    let scale = SCALE;
+    app.new_window().event(event).view(view).build().unwrap();
+    Model { scale }
+}
+
+fn update(_app: &App, model: &mut Model, _update: Update) {}
+
+fn event(_app: &App, model: &mut Model, event: WindowEvent) {
+    let step = 0.2;
+    match event {
+        KeyPressed(key) => match key {
+            nannou::event::Key::Q => {
+                model.scale -= step;
+            }
+            nannou::event::Key::E => {
+                model.scale += step;
+            }
+            _ => (),
+        },
+        KeyReleased(key) => {}
+        MousePressed(_button) => {}
+        _other => (),
+    }
+}
+
+fn view(app: &App, model: &Model, frame: Frame) {
     // Begin drawing
     let draw = app.draw();
     // Clear the background to blue.
@@ -37,8 +69,8 @@ fn view(app: &App, frame: Frame) {
         draw.line().weight(2.).color(MEDIUMSPRINGGREEN).points(
             Point2::new(app.mouse.x, app.mouse.y),
             Point2::new(
-                app.mouse.x + norm * SCALE * rand::random::<f32>() + ROTATION * t.sin(),
-                app.mouse.y + norm * SCALE * rand::random::<f32>() + ROTATION * t.cos(),
+                app.mouse.x + norm * model.scale * rand::random::<f32>() + ROTATION * t.sin(),
+                app.mouse.y + norm * model.scale * rand::random::<f32>() + ROTATION * t.cos(),
             ),
         );
         // I didnt come up with some clever formula to make it one draw call per cycle run
@@ -46,8 +78,8 @@ fn view(app: &App, frame: Frame) {
         draw.line().weight(2.).color(MEDIUMSPRINGGREEN).points(
             Point2::new(app.mouse.x, app.mouse.y),
             Point2::new(
-                app.mouse.x + norm * SCALE * rand::random::<f32>() + ROTATION * t.sin(),
-                app.mouse.y - norm * SCALE * rand::random::<f32>() + ROTATION * t.cos(),
+                app.mouse.x + norm * model.scale * rand::random::<f32>() + ROTATION * t.sin(),
+                app.mouse.y - norm * model.scale * rand::random::<f32>() + ROTATION * t.cos(),
             ),
         );
     }
