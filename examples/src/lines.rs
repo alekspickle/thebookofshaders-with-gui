@@ -56,9 +56,9 @@ fn draw(ib: &mut ImageBuffer<Rgb<u8>, Vec<u8>>, x: i32, y: i32, w: i32, h: i32) 
     let left_to_right = rand::random::<f32>();
     if x + w < ib.width() as i32 && y + h < ib.height() as i32 {
         if left_to_right >= 0.5 {
-            utils::line(ib, Point2::new(x, y), Point2::new(x + w, y + h));
+            utils::line(ib, &Point2::new(x, y), &Point2::new(x + w, y + h));
         } else {
-            utils::line(ib, Point2::new(x + w, y), Point2::new(x, y + h));
+            utils::line(ib, &Point2::new(x + w, y), &Point2::new(x, y + h));
         }
     }
 }
