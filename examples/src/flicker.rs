@@ -15,7 +15,6 @@ struct Model {
 }
 
 fn model(app: &App) -> Model {
-    // Create a window that can receive user input like mouse and keyboard events.
     let scale = SCALE;
     app.new_window().event(event).view(view).build().unwrap();
     Model { scale }
@@ -51,16 +50,6 @@ fn view(app: &App, model: &Model, frame: Frame) {
     let win = app.window_rect();
     // Get time as float.
     let t = app.time;
-
-    // // Draw a quad that follows the inverse of the ellipse.
-    // draw.quad()
-    //     // .x_y(app.mouse.x * t.cos() * PI, app.mouse.y * t.sin())
-    //     .x_y(app.mouse.x, app.mouse.y)
-    //     .w_h(QUAD_W, QUAD_W)
-    //     // .rotate(t)
-    //     .color(CORNFLOWERBLUE)
-    //     .stroke_weight(5.)
-    //     .stroke_color(MEDIUMSPRINGGREEN);
 
     for i in -SAMPLES..SAMPLES {
         // TODO: normalize for any sample quantity to be uniform
