@@ -52,6 +52,7 @@ pub fn print_italic(s: &str) {
 //
 // https://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm
 pub fn line(ib: &mut ImageBuffer<Rgb<u8>, Vec<u8>>, p1: &Point2, p2: &Point2) {
+    // println!("P1:{:?};P2:{:?}", p1, p2);
     match (p1, p2) {
         // // horizontal case
         // (p1, p2) if p2.y == p1.y => plot_line_horizontal(ib, p1, p2),

@@ -30,19 +30,19 @@ fn main() {
     }
 
     // Iterate over the coordinates and pixels of the image
+    // IMPORTANT STEP: it defines the shape of curves in the image 
     let mut horiz: Vec<i32> = imgbuf
         .clone()
         .enumerate_pixels_mut()
-        // .step_by(step as usize)
-        // .filter(|(_, y, _)| *y as i32 % step == 0)
+        .step_by(step as usize - 1)
+        .filter(|(_, y, _)| *y as i32 % step == 0)
         .map(|(x, _, _)| x as i32)
         .take_while(|x| *x <= (imgbuf.width() as i32))
         .collect();
-    let mut vert: Vec<i32> = imgbuf
+        let mut vert: Vec<i32> = imgbuf
         .clone()
         .enumerate_pixels_mut()
-        // .step_by(step as usize)
-        // .filter(|(x, _, _)| *x as i32 % step == 0)
+        .step_by(step as usize - 1)
         .map(|(_, y, _)| y as i32)
         .take_while(|y| *y <= (imgbuf.height() as i32))
         .collect();
@@ -56,13 +56,13 @@ fn main() {
     let range = Uniform::new_inclusive(0, 10);
     for &i in vert.iter().step_by(step as usize) {
         let mut line = Vec::new();
-        for j in horiz.iter() {
+        for j in horiz.iter().step_by(step as usize) {
             // TODO: random points
             let mut r = range.sample_iter(rng).next().unwrap();
 
             // array bounds corner case guard
             let new_y = if i + r < imgbuf.height() as i32 {
-                i 
+                i + r
             } else {
                 i
             };
@@ -77,7 +77,9 @@ fn main() {
         let p0 = &l.points[0];
         for (i, p) in l.points.iter().enumerate() {
             let p_start = if i < 1 { 0 } else { i - 1 };
-            utils::line(&mut imgbuf, &l.points[p_start], p)
+            utils::line(&mut imgbuf, &l.points[p_start], p);
+            // utils::assign_pixel(&mut imgbuf, l.points[p_start].x, l.points[p_start].y);
+            // utils::assign_pixel(&mut imgbuf, p.x, p.y);
         }
     }
     utils::save_image(imgbuf, Path::new("examples/outputs/joy_division.png"));
