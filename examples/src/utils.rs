@@ -1,7 +1,7 @@
 use image::{self, ImageBuffer, ImageFormat, Rgb};
+use itertools_num::linspace;
 use std::path::Path;
 use termion::{color, style};
-use itertools_num::linspace;
 
 #[derive(Debug)]
 pub struct Point2 {
@@ -82,7 +82,15 @@ pub fn plot_line_high(ib: &mut ImageBuffer<Rgb<u8>, Vec<u8>>, p1: &Point2, p2: &
     }
     let mut d = 2. * dx - dy;
     let mut x = p1.x;
+
     for y in linspace::<f32>(p1.y, p2.y, 10) {
+        // println!("{}-{}:{}; Y:{}", p1.x, p2.x, x, y);
+        match (x, y) {
+            (x, y) if x + 0.1 >= ib.width() as f32 || y + 0.1 >= ib.height() as f32 => {
+                continue;
+            }
+            _ => (),
+        }
         assign_pixel(ib, x, y);
 
         if d > 0. {
@@ -105,6 +113,14 @@ pub fn plot_line_low(ib: &mut ImageBuffer<Rgb<u8>, Vec<u8>>, p1: &Point2, p2: &P
     let mut y = p1.y;
 
     for x in linspace(p1.x, p2.x, 10) {
+        // println!("{}-{}:{}; Y:{}", p1.x, p2.x, x, y);
+        match (x, y) {
+            (x, y) if x + 0.1 >= ib.width() as f32 || y + 0.1 >= ib.height() as f32 => {
+                continue;
+            }
+            _ => (),
+        }
+
         assign_pixel(ib, x, y);
 
         if d > 0. {
@@ -123,8 +139,8 @@ pub fn assign_pixel(ib: &mut ImageBuffer<Rgb<u8>, Vec<u8>>, x: f32, y: f32) {
     *pixel = Rgb([0.0 as u8, 0.0 as u8, 0.0 as u8]);
 }
 
-// /// Xiaolin Wu`s naive implementation of line drawing with antialiasing 
+// /// Xiaolin Wu`s naive implementation of line drawing with antialiasing
 // pub fn line_antialised(ib: &mut ImageBuffer<Rgb<u8>, Vec<u8>>, p1: &Point2, p2: &Point2) {
 //     let steep = (p2.y - p1.x).abs() > (p2.x - p1.x).abs();
-    
+
 // }

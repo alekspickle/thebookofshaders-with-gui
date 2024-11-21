@@ -1,17 +1,18 @@
 use image::{ImageBuffer, Rgb};
+use itertools;
+use itertools_num::linspace;
 use rand::{
     distributions::{Distribution, Uniform},
     thread_rng,
 };
 use std::{path::Path, time::Instant};
 use utils::{Line, Point2};
-use itertools;
-use itertools_num::linspace;
 
 fn main() {
     let start = Instant::now();
     let mut imgbuf = ImageBuffer::new(50, 50);
     let step: f32 = 5.;
+    let wiggle = 0.2;
     println!(
         "Juggling pixels ({}x{})...\nStep:{}.",
         imgbuf.width(),
@@ -32,54 +33,79 @@ fn main() {
     }
 
     // Iterate over the coordinates and pixels of the image
-    // IMPORTANT STEP: it defines the shape of curves in the image 
+    // IMPORTANT STEP: it defines the shape of curves in the image
     let mut horiz: Vec<f32> = imgbuf
+        .clone()
+        .enumerate_pixels_mut()
+        // .step_by(step as usize)
+        // .filter(|(x, _, _)| *x as f32 % step == 0.0)
+        .map(|(x, _, _)| x as f32)
+        .take_while(|x| *x <= (imgbuf.width() as f32))
+        .collect();
+    let mut vert: Vec<f32> = imgbuf
         .clone()
         .enumerate_pixels_mut()
         .step_by(step as usize)
         .filter(|(_, y, _)| *y as f32 % step == 0.0)
-        .map(|(x, _, _)| x as f32)
-        .take_while(|x| *x <= (imgbuf.width() as f32))
-        .collect();
-        let mut vert: Vec<f32> = imgbuf
-        .clone()
-        .enumerate_pixels_mut()
-        .step_by(step as usize)
         .map(|(_, y, _)| y as f32)
         .take_while(|y| *y <= (imgbuf.height() as f32))
         .collect();
-    // Dedup vector of y, because the image iterator takes pixel/per iteration
-    // vert.dedup_by(|a, b| a == b);
-    // horiz.dedup_by(|a, b| a == b);
-    println!("{:?}", horiz);
-    print!("{:?}", vert);
+
+    // Divide x coords by slices belonging to one y
+    let horiz: Vec<&[f32]> = horiz.windows(imgbuf.width() as usize).collect();
+    // Dedup vector of y, each y will be the y of a whole line
+    vert.dedup_by(|a, b| a == b);
+
+    println!("H:{:?}", horiz.len());
+    print!("V:{:?}", vert);
 
     let mut lines: Vec<Line> = Vec::new();
     let rng = thread_rng();
-    let range = Uniform::new_inclusive(0., 20.);
-    for &i in vert.iter().step_by(step as usize) {
+    let range = Uniform::new_inclusive(0., wiggle);
+    // for each Line
+    for &i in vert.iter() {
+        let i = i as f32;
         let mut line = Vec::new();
-        for j in horiz.iter().step_by(step as usize) {
-            // TODO: random points
-            let mut r = range.sample_iter(rng).next().unwrap();
+        // iterate through slices of x
+        for &&line_window in horiz.get(i as usize).iter() {
+            // iterate through slice
+            for &j in line_window.iter() {
+                // println!("x:{}; y:{}", j,i);
 
-            // array bounds corner case guard
-            let new_y = if i + r < imgbuf.height() as f32 {
-                i + r
-            } else {
-                i
-            };
+                // TODO: random points
+                let mut r = range.sample_iter(rng).next().unwrap();
+                // println!("{}", r);
 
-            line.push(Point2::new(*j, new_y));
+                // array bounds corner case guard
+                let new_y = if i + r < imgbuf.height() as f32 {
+                    i + r
+                } else {
+                    i
+                };
+
+                line.push(Point2::new(j, new_y));
+            }
         }
+        println!("{} points+", line.len());
         lines.push(Line::new(line))
     }
     println!("\n{} lines", lines.len());
 
     for l in lines.iter() {
         let _p0 = &l.points[0];
+        // println!("points len:{}", &l.points.len());
         for (i, p) in l.points.iter().enumerate() {
+            // first element check
             let p_start = if i < 1 { 0 } else { i - 1 };
+
+            // println!("p_start:{}", p_start);
+            // println!(
+            //     "overflowed:{} {}>{}",
+            //     i > *&l.points[p_start].y as usize,
+            //     i,
+            //     *&l.points[p_start].y as usize
+            // );
+
             utils::line(&mut imgbuf, &l.points[p_start], p);
             // utils::assign_pixel(&mut imgbuf, l.points[p_start].x, l.points[p_start].y);
             // utils::assign_pixel(&mut imgbuf, p.x, p.y);
