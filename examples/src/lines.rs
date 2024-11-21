@@ -1,6 +1,11 @@
 use image::{ImageBuffer, Rgb};
 use std::{path::Path, time::Instant};
 
+struct Context {
+    pub buf: ImageBuffer<Rgb<u8>, Vec<u8>>,
+    pub color: Rgb<u8>,
+}
+
 #[derive(Debug)]
 struct Point2 {
     x: i32,
@@ -15,31 +20,47 @@ impl Point2 {
 
 fn main() {
     let start = Instant::now();
-    println!("Juggling pixels...");
-
     let mut imgbuf = ImageBuffer::new(500, 500);
-    let step: i32 = 24;
+    let step: i32 = 50;
+    println!(
+        "Juggling pixels...\nWidth:{}-Height:{}.\nStep:{}.",
+        imgbuf.width(),
+        imgbuf.height(),
+        step
+    );
 
     // Iterate over the coordinates and pixels of the image
+    // to set basic background color
     for (x, y, pixel) in imgbuf.enumerate_pixels_mut() {
-        let r = (0.1 * (x as f32).powf(0.6) * (y as f32).powf(0.6)) as u8;
-        let g = (0.9 * (x as f32).powf(0.6) * (y as f32).powf(0.6)) as u8;
-        let b = (0.7 * (x as f32).powf(0.6) * (y as f32).powf(0.6)) as u8;
+        let r = (0.1 * (x as f32).powf(0.55) * (y as f32).powf(0.55)) as u8;
+        let g = (0.9 * (x as f32).powf(0.55) * (y as f32).powf(0.55)) as u8;
+        let b = (0.7 * (x as f32).powf(0.55) * (y as f32).powf(0.55)) as u8;
         *pixel = Rgb([r, g, b]);
     }
 
     // Iterate over the coordinates and pixels of the image
-    let pixel_coords: Vec<(i32, i32)> = imgbuf
+    let horiz: Vec<i32> = imgbuf
         .enumerate_pixels_mut()
-        .map(|(x, y, _)| (x as i32, y as i32))
+        .map(|(x, _, _)| x as i32)
+        .step_by(step as usize)
         .collect();
+    let mut vert: Vec<i32> = imgbuf
+        .enumerate_pixels_mut()
+        .map(|(_, y, _)| y as i32)
+        .step_by(step as usize)
+        .collect();
+    vert.dedup_by(|a, b| a == b);
+    let zipped = horiz.iter().zip(vert.iter());
+    // println!("{:?}", vert);
 
-    for (x, y) in pixel_coords.iter().step_by(step as usize) {
+    for (x, y) in zipped {
         // if x < &(imgbuf.width() as i32) && y < &(imgbuf.height() as i32) {
-        // println!("x:{},y:{}", x, y);
+        // println!("x:{}, y:{}", x, y);
+
         draw(&mut imgbuf, *x, *y, step, step);
         // }
     }
+    // line(&mut imgbuf, Point2::new(25, 25), Point2::new(50, 50));
 
     utils::save_image(imgbuf, Path::new("examples/outputs/lines.png"));
     println!("Time taken: {:?}", start.elapsed());
@@ -74,18 +95,6 @@ fn line(ib: &mut ImageBuffer<Rgb<u8>, Vec<u8>>, p1: Point2, p2: Point2) {
             plot_line_high(ib, p1, p2)
         }
     }
-
-    // // Iterate over the coordinates and pixels of the image
-    // for (x, y, pixel) in imgbuf.enumerate_pixels_mut() {
-    //     let r = (0.3 * x as f32) as u8;
-    //     let b = (0.3 * y as f32) as u8;
-    //     *pixel = Rgb([r, 0, b]);
-    // }
-
-    // // Mutating single pixel
-    // let pixel = imgbuf.get_pixel_mut(x, y);
-    // let data = (*pixel as Rgb<u8>).0;
-    // *pixel = Rgb([data[0], i as u8, data[2]]);
 }
 
 fn plot_line_high(ib: &mut ImageBuffer<Rgb<u8>, Vec<u8>>, p1: Point2, p2: Point2) {
@@ -100,10 +109,7 @@ fn plot_line_high(ib: &mut ImageBuffer<Rgb<u8>, Vec<u8>>, p1: Point2, p2: Point2
     let mut x = p1.x;
 
     for y in p1.y..p2.y {
-        // Mutating single pixel
-        let pixel = ib.get_pixel_mut(x as u32, y as u32);
-        // let data = (*pixel as Rgb<u8>).0;
-        *pixel = Rgb([0.0 as u8, 0.0 as u8, 0.0 as u8]);
+        assign_pixel(ib, x, y);
 
         if D > 0 {
             x = x + xi;
@@ -112,6 +118,7 @@ fn plot_line_high(ib: &mut ImageBuffer<Rgb<u8>, Vec<u8>>, p1: Point2, p2: Point2
         D = D + 2 * dx
     }
 }
+
 fn plot_line_low(ib: &mut ImageBuffer<Rgb<u8>, Vec<u8>>, p1: Point2, p2: Point2) {
     let dx = p2.x - p1.x;
     let mut dy = p2.y - p1.y;
@@ -124,10 +131,7 @@ fn plot_line_low(ib: &mut ImageBuffer<Rgb<u8>, Vec<u8>>, p1: Point2, p2: Point2)
     let mut y = p1.y;
 
     for x in p1.x..p2.x {
-        // Mutating single pixel
-        let pixel = ib.get_pixel_mut(x as u32, y as u32);
-        // let data = (*pixel as Rgb<u8>).0;
-        *pixel = Rgb([0.0 as u8, 0.0 as u8, 0.0 as u8]);
+        assign_pixel(ib, x, y);
 
         if D > 0 {
             y = y + yi;
@@ -135,4 +139,11 @@ fn plot_line_low(ib: &mut ImageBuffer<Rgb<u8>, Vec<u8>>, p1: Point2, p2: Point2)
         }
         D = D + 2 * dy
     }
+}
+
+fn assign_pixel(ib: &mut ImageBuffer<Rgb<u8>, Vec<u8>>, x: i32, y: i32) {
+    // Mutating single pixel
+    let pixel = ib.get_pixel_mut(x as u32, y as u32);
+    // let data = (*pixel as Rgb<u8>).0;
+    *pixel = Rgb([0.0 as u8, 0.0 as u8, 0.0 as u8]);
 }
