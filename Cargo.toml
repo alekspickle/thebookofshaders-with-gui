@@ -1,8 +1,2 @@
-[package]
-name = "generative_sketches"
-version = "0.1.0"
-authors = ["Aleks Pickle <aleks.work2222@gmail.com>"]
-edition = "2018"
-
-[dependencies]
-nannou = "*"
+[workspace]
+members = ["examples"]
