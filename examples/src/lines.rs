@@ -14,8 +14,16 @@ impl Point2 {
 }
 
 fn main() {
-    let mut imgbuf = ImageBuffer::new(50, 50);
-    let step: i32 = 20;
+    let mut imgbuf = ImageBuffer::new(500, 500);
+    let step: i32 = 2;
+
+    // Iterate over the coordinates and pixels of the image
+    for (x, y, pixel) in imgbuf.enumerate_pixels_mut() {
+        let r = (0.9 * x as f32) as u8;
+        let g = (0.9 * x as f32) as u8;
+        let b = (0.9 * y as f32) as u8;
+        *pixel = Rgb([r, g, b]);
+    }
 
     // Iterate over the coordinates and pixels of the image
     let pixel_coords: Vec<(i32, i32)> = imgbuf
@@ -24,10 +32,10 @@ fn main() {
         .collect();
 
     for (x, y) in pixel_coords.iter().step_by(step as usize) {
-        if x < &(imgbuf.width() as i32) && y < &(imgbuf.height() as i32) {
-            println!("x:{},y:{}", x, y);
-            draw(&mut imgbuf, *x, *y, step, step);
-        }
+        // if x < &(imgbuf.width() as i32) && y < &(imgbuf.height() as i32) {
+        // println!("x:{},y:{}", x, y);
+        draw(&mut imgbuf, *x, *y, step, step);
+        // }
     }
 
     utils::save_image(imgbuf, Path::new("examples/outputs/lines.png"));
@@ -36,11 +44,12 @@ fn main() {
 fn draw(ib: &mut ImageBuffer<Rgb<u8>, Vec<u8>>, x: i32, y: i32, w: i32, h: i32) {
     // left to right bool
     let left_to_right = rand::random::<f32>();
-
-    if left_to_right >= 0.5 {
-        line(ib, Point2::new(x, y), Point2::new(x + w, y + h));
-    } else {
-        line(ib, Point2::new(x + w, y), Point2::new(x, y + h));
+    if x + w < ib.width() as i32 && y + h < ib.height() as i32 {
+        if left_to_right >= 0.5 {
+            line(ib, Point2::new(x, y), Point2::new(x + w, y + h));
+        } else {
+            line(ib, Point2::new(x + w, y), Point2::new(x, y + h));
+        }
     }
 }
 
