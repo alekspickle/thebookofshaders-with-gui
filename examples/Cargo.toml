@@ -6,8 +6,14 @@ edition = "2018"
 
 [dependencies]
 nannou = "0.14.1"
-rand = "*"
-miniquad = "*"
+rand = "0.7.3"
+miniquad = "0.2.55"
+image= "0.23.8"
+termion = "*"
+
+[lib]
+name = "utils"
+path = "src/utils.rs"
 
 [[example]]
 name = "lines"
