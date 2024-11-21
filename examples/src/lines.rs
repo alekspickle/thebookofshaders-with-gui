@@ -1,4 +1,5 @@
 use nannou::prelude::*;
+use rand;
 
 fn main() {
     nannou::sketch(view).run()
@@ -7,31 +8,34 @@ fn main() {
 fn view(app: &App, frame: Frame) {
     // Begin drawing
     let draw = app.draw();
-
     // Clear the background to blue.
     draw.background().color(CORNFLOWERBLUE);
 
-    // Draw a purple triangle in the top left half of the window.
-    let _win = app.window_rect();
+    // Get window as Rect.
+    let win = app.window_rect();
+    // Get time as float.
+    let t = app.time;
 
-    // Draw an ellipse to follow the mouse.
-    let _t = app.time;
+    // Step
+    let step: f32 = 80.;
 
-    // Main render task
-    render(&draw, app.mouse.x, app.mouse.y);
-
+    render(&draw, app.mouse.x, app.mouse.y, step, step);
+        
     // Write the result of our drawing to the window's frame.
     draw.to_frame(app, &frame).unwrap();
 }
 
-fn render(draw: &Draw, x: f32, y: f32) {
-    // Draw a quad that follows the inverse of the ellipse.
-    draw.quad()
-        .x_y(x,y)
-        .w_h(500., 500.)
-        // .rotate(t)
-        .color(CORNFLOWERBLUE)
-        .stroke_weight(10.)
-        .stroke_color(MEDIUMSPRINGGREEN);
+fn render(draw: &Draw, x: f32, y: f32, w: f32, h: f32) {
+    // left to right bool
+    let left_to_right = rand::random::<f32>();
 
+    if left_to_right >= 0.5 {
+        draw.line()
+            .weight(1.)
+            .points(Point2::new(x, y), Point2::new(x + w, y + h));
+    } else {
+        draw.line()
+            .weight(1.)
+            .points(Point2::new(x, y), Point2::new(y + w, x + h));
+    }
 }

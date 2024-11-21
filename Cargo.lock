@@ -454,7 +454,9 @@ dependencies = [
 name = "generative_sketches"
 version = "0.1.0"
 dependencies = [
+ "miniquad 0.2.55 (registry+https://github.com/rust-lang/crates.io-index)",
  "nannou 0.14.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rand 0.7.3 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -855,6 +857,19 @@ dependencies = [
  "foreign-types 0.3.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "log 0.4.11 (registry+https://github.com/rust-lang/crates.io-index)",
  "objc 0.2.7 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "miniquad"
+version = "0.2.55"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "sapp-android 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "sapp-darwin 0.1.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "sapp-dummy 0.1.3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "sapp-linux 0.1.7 (registry+https://github.com/rust-lang/crates.io-index)",
+ "sapp-wasm 0.1.15 (registry+https://github.com/rust-lang/crates.io-index)",
+ "sapp-windows 0.2.8 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -1673,6 +1688,54 @@ dependencies = [
 ]
 
 [[package]]
+name = "sapp-android"
+version = "0.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "cc 1.0.58 (registry+https://github.com/rust-lang/crates.io-index)",
+ "libc 0.2.74 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "sapp-darwin"
+version = "0.1.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "cc 1.0.58 (registry+https://github.com/rust-lang/crates.io-index)",
+ "libc 0.2.74 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "sapp-dummy"
+version = "0.1.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "libc 0.2.74 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "sapp-linux"
+version = "0.1.7"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "libc 0.2.74 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "sapp-wasm"
+version = "0.1.15"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
+name = "sapp-windows"
+version = "0.2.8"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "cc 1.0.58 (registry+https://github.com/rust-lang/crates.io-index)",
+ "libc 0.2.74 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
 name = "scoped_threadpool"
 version = "0.1.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2297,6 +2360,7 @@ dependencies = [
 "checksum memmap 0.7.0 (registry+https://github.com/rust-lang/crates.io-index)" = "6585fd95e7bb50d6cc31e20d4cf9afb4e2ba16c5846fc76793f11218da9c475b"
 "checksum memoffset 0.5.5 (registry+https://github.com/rust-lang/crates.io-index)" = "c198b026e1bbf08a937e94c6c60f9ec4a2267f5b0d2eec9c1b21b061ce2be55f"
 "checksum metal 0.18.0 (registry+https://github.com/rust-lang/crates.io-index)" = "e198a0ee42bdbe9ef2c09d0b9426f3b2b47d90d93a4a9b0395c4cea605e92dc0"
+"checksum miniquad 0.2.55 (registry+https://github.com/rust-lang/crates.io-index)" = "9a83d69b5a9caa84f5bf7fd95ba3e3a0773297e004145a5a78ac7b00b1bdfb20"
 "checksum miniz_oxide 0.3.7 (registry+https://github.com/rust-lang/crates.io-index)" = "791daaae1ed6889560f8c4359194f56648355540573244a5448a83ba1ecc7435"
 "checksum mio 0.6.22 (registry+https://github.com/rust-lang/crates.io-index)" = "fce347092656428bc8eaf6201042cb551b8d67855af7374542a92a0fbfcac430"
 "checksum mio-extras 2.0.6 (registry+https://github.com/rust-lang/crates.io-index)" = "52403fe290012ce777c4626790c8951324a2b9e3316b3143779c72b029742f19"
@@ -2383,6 +2447,12 @@ dependencies = [
 "checksum rusttype 0.8.3 (registry+https://github.com/rust-lang/crates.io-index)" = "9f61411055101f7b60ecf1041d87fb74205fb20b0c7a723f07ef39174cf6b4c0"
 "checksum ryu 1.0.5 (registry+https://github.com/rust-lang/crates.io-index)" = "71d301d4193d031abdd79ff7e3dd721168a9572ef3fe51a1517aba235bd8f86e"
 "checksum same-file 1.0.6 (registry+https://github.com/rust-lang/crates.io-index)" = "93fc1dc3aaa9bfed95e02e6eadabb4baf7e3078b0bd1b4d7b6b0b68378900502"
+"checksum sapp-android 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)" = "d5547ac47995d3c38e80f1ee5b0794c04090e67f6703878fb0008539a91dbc70"
+"checksum sapp-darwin 0.1.2 (registry+https://github.com/rust-lang/crates.io-index)" = "011e764a379302de761892ad9a0de6e5d612146423b39ddee125fb1cb2ffcb73"
+"checksum sapp-dummy 0.1.3 (registry+https://github.com/rust-lang/crates.io-index)" = "844086b04fc920b4b604af0bb6ffc5c3b43dbb4fe94fd6f532c41a391e12f717"
+"checksum sapp-linux 0.1.7 (registry+https://github.com/rust-lang/crates.io-index)" = "000e062c5e8937e52d991197645766a8354bd4123089abc29080353d0c5bcd61"
+"checksum sapp-wasm 0.1.15 (registry+https://github.com/rust-lang/crates.io-index)" = "0315b1543db8828988bb0d86db7f4cfd134491cd3a4bbe1087757e97ae57dd3e"
+"checksum sapp-windows 0.2.8 (registry+https://github.com/rust-lang/crates.io-index)" = "717ac8616ee982a096d052f0880a29926fd1942474307c035ba29f763a8b164c"
 "checksum scoped_threadpool 0.1.9 (registry+https://github.com/rust-lang/crates.io-index)" = "1d51f5df5af43ab3f1360b429fa5e0152ac5ce8c0bd6485cae490332e96846a8"
 "checksum scopeguard 1.1.0 (registry+https://github.com/rust-lang/crates.io-index)" = "d29ab0c6d3fc0ee92fe66e2d99f700eab17a8d57d1c1d3b748380fb20baa78cd"
 "checksum semver 0.9.0 (registry+https://github.com/rust-lang/crates.io-index)" = "1d7eb9ef2c18661902cc47e535f9bc51b78acd254da71d375c2f6720d9a40403"

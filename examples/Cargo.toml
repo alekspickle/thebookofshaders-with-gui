@@ -6,8 +6,13 @@ edition = "2018"
 
 [dependencies]
 nannou = "0.14.1"
-
+rand = "*"
+miniquad = "*"
 
 [[example]]
 name = "lines"
 path = "src/lines.rs"
+
+[[example]]
+name = "flickering"
+path = "src/flickering.rs"
