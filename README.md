@@ -1,5 +1,7 @@
 ## Set of exercises from generativeartistry.com and my own sketches
-![lines_demo](examples/outputs/rnbw.png)
+|     |     |     |
+| --- |:---:| ---:|
+| [![1](examples/outputs/rnbw.png)]() | [![2](examples/outputs/patterns.png)]() |[![3](examples/outputs/texture_sample.png)]()|
 
 ### built with [nannou](https://github.com/nannou-org/nannou) and ❤️
 

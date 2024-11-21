@@ -1,5 +1,5 @@
 use image::{ImageBuffer, Rgb};
-use std::path::Path;
+use std::{path::Path, time::Instant};
 
 #[derive(Debug)]
 struct Point2 {
@@ -14,14 +14,17 @@ impl Point2 {
 }
 
 fn main() {
+    let start = Instant::now();
+    println!("Juggling pixels...");
+
     let mut imgbuf = ImageBuffer::new(500, 500);
-    let step: i32 = 2;
+    let step: i32 = 24;
 
     // Iterate over the coordinates and pixels of the image
     for (x, y, pixel) in imgbuf.enumerate_pixels_mut() {
-        let r = (0.9 * x as f32) as u8;
-        let g = (0.9 * x as f32) as u8;
-        let b = (0.9 * y as f32) as u8;
+        let r = (0.1 * (x as f32).powf(0.6) * (y as f32).powf(0.6)) as u8;
+        let g = (0.9 * (x as f32).powf(0.6) * (y as f32).powf(0.6)) as u8;
+        let b = (0.7 * (x as f32).powf(0.6) * (y as f32).powf(0.6)) as u8;
         *pixel = Rgb([r, g, b]);
     }
 
@@ -39,6 +42,7 @@ fn main() {
     }
 
     utils::save_image(imgbuf, Path::new("examples/outputs/lines.png"));
+    println!("Time taken: {:?}", start.elapsed());
 }
 
 fn draw(ib: &mut ImageBuffer<Rgb<u8>, Vec<u8>>, x: i32, y: i32, w: i32, h: i32) {
@@ -98,8 +102,8 @@ fn plot_line_high(ib: &mut ImageBuffer<Rgb<u8>, Vec<u8>>, p1: Point2, p2: Point2
     for y in p1.y..p2.y {
         // Mutating single pixel
         let pixel = ib.get_pixel_mut(x as u32, y as u32);
-        let data = (*pixel as Rgb<u8>).0;
-        *pixel = Rgb([data[0], 0.9 as u8, data[2]]);
+        // let data = (*pixel as Rgb<u8>).0;
+        *pixel = Rgb([0.0 as u8, 0.0 as u8, 0.0 as u8]);
 
         if D > 0 {
             x = x + xi;
@@ -122,8 +126,8 @@ fn plot_line_low(ib: &mut ImageBuffer<Rgb<u8>, Vec<u8>>, p1: Point2, p2: Point2)
     for x in p1.x..p2.x {
         // Mutating single pixel
         let pixel = ib.get_pixel_mut(x as u32, y as u32);
-        let data = (*pixel as Rgb<u8>).0;
-        *pixel = Rgb([data[0], 0.9 as u8, data[2]]);
+        // let data = (*pixel as Rgb<u8>).0;
+        *pixel = Rgb([0.0 as u8, 0.0 as u8, 0.0 as u8]);
 
         if D > 0 {
             y = y + yi;
