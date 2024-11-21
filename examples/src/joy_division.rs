@@ -48,10 +48,10 @@ fn main() {
     //     .collect();
 
     let mut lines: Vec<Line> = Vec::new();
-    for x in horiz.iter() {
+    for i in horiz.iter() {
         let mut line = Vec::new();
-        for y in vert.iter() {
-            line.push(Point2::new(*x, *y));
+        for j in vert.iter() {
+            line.push(Point2::new(*j, *i));
         }
         lines.push(Line::new(line))
     }
