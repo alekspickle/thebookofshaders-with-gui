@@ -1,10 +1,10 @@
 use nannou::prelude::*;
 use nannou::ui::prelude::*;
-// use rand;
+use rand::{self, Rng};
 
 const SCALE: f32 = 0.35;
 const SAMPLES: i32 = 500;
-const ROTATION: f32 = 1.;
+const ROTATION: f32 = 1.1;
 
 fn main() {
     nannou::app(model).update(update).run();
@@ -54,7 +54,8 @@ fn view(app: &App, model: &Model, frame: Frame) {
     for i in -SAMPLES..SAMPLES {
         // TODO: normalize for any sample quantity to be uniform
         // let norm = i.normalize(-win.w() as i32 / 2, win.w() as i32 / 2) as f32;
-        let norm = i as f32;
+        
+        let norm = uniform_randomize(i, SAMPLES);
         draw.line().weight(2.).color(MEDIUMSPRINGGREEN).points(
             Point2::new(app.mouse.x, app.mouse.y),
             Point2::new(
@@ -91,5 +92,15 @@ impl Normalize<i32> for i32 {
             println!("{:?} n:{}", self, n);
             n
         }
+    }
+}
+
+fn uniform_randomize( i: i32, n: i32) -> f32 {
+    let mut rng = rand::thread_rng();
+    let bias = rng.gen_range(-n as f32, n as f32);
+    if i % 2 == 0 {
+        (bias * i as f32) / n as f32 + bias
+    } else {
+        (bias * i as f32) / n as f32 - bias
     }
 }
