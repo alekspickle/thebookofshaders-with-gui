@@ -5,26 +5,26 @@ authors = ["Aleks Pickle <aleks.work2222@gmail.com>"]
 edition = "2018"
 
 [dependencies]
-nannou = "0.14.1"
-rand = "0.7.3"
+line_drawing = "1.0.0"
 miniquad = "0.2.55"
-image= "0.23.8"
-termion = "1.5.5"
+image= "0.24.3"
 itertools = "0.9"
 itertools-num = "0.1.3"
+termion = "1.5.5"
+rand = "0.7.3"
 
 [lib]
 name = "utils"
 path = "src/utils.rs"
 
 [[example]]
-name = "lines"
-path = "src/lines.rs"
+name = "basic"
+path = "src/basic.rs"
+
+[[example]]
+name = "labyrinth"
+path = "src/labyrinth.rs"
 
 [[example]]
 name = "joy_division"
 path = "src/joy_division.rs"
-
-[[example]]
-name = "flicker"
-path = "src/flicker.rs"

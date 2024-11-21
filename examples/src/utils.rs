@@ -1,7 +1,19 @@
 use image::{self, ImageBuffer, ImageFormat, Rgb};
 use itertools_num::linspace;
-use std::path::Path;
+use line_drawing::Point;
+use std::{path::Path, time::Instant};
 use termion::{color, style};
+
+pub struct Timer(Instant);
+
+impl Timer {
+    pub fn new() -> Self {
+        Self(Instant::now())
+    }
+    pub fn end(&self) {
+        println!("Time taken: {:?}", self.0.elapsed());
+    }
+}
 
 #[derive(Debug)]
 pub struct Point2 {
@@ -15,10 +27,26 @@ impl Point2 {
     }
 }
 
+impl From<&Point2> for (f32, f32) {
+    fn from(p: &Point2) -> (f32, f32) {
+        (p.x, p.y)
+    }
+}
+
+impl From<(f32, f32)> for Point2 {
+    fn from(tuple: (f32, f32)) -> Self {
+        Self {
+            x: tuple.0,
+            y: tuple.1,
+        }
+    }
+}
+
 #[derive(Debug)]
 pub struct Line {
     pub points: Vec<Point2>,
 }
+
 impl Line {
     pub fn new(points: Vec<Point2>) -> Self {
         Line { points }
@@ -49,98 +77,50 @@ pub fn print_italic(s: &str) {
     println!("{}{}{}", style::Italic, s, style::Reset);
 }
 
-// simplified full Bresenham line algorhitm implementation
-//
-// https://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm
-pub fn line(ib: &mut ImageBuffer<Rgb<u8>, Vec<u8>>, p1: &Point2, p2: &Point2) {
-    // println!("P1:{:?};P2:{:?}", p1, p2);
-    match (p1, p2) {
-        // // horizontal case
-        // (p1, p2) if p2.y == p1.y => plot_line_horizontal(ib, p1, p2),
-        // // vertical case
-        // (p1, p2) if p2.x == p1.x => plot_line_vertical(ib, p1, p2),
-        // going upside down
-        (p1, p2) if (p2.y - p1.y).abs() < (p2.x - p1.x).abs() => match (p1, p2) {
-            (p1, p2) if p1.x > p2.x => plot_line_low(ib, p2, p1),
-            _ => plot_line_low(ib, p1, p2),
-        },
-        // going downside up
-        _ => match (p1, p2) {
-            (p1, p2) if p1.y > p2.y => plot_line_high(ib, p2, p1),
-            _ => plot_line_high(ib, p1, p2),
-        },
+pub struct Image(ImageBuffer<Rgb<u8>, Vec<u8>>);
+
+impl From<ImageBuffer<Rgb<u8>, Vec<u8>>> for Image {
+    fn from(buf: ImageBuffer<Rgb<u8>, Vec<u8>>) -> Self {
+        Self(buf)
     }
 }
 
-pub fn plot_line_high(ib: &mut ImageBuffer<Rgb<u8>, Vec<u8>>, p1: &Point2, p2: &Point2) {
-    let mut dx = p2.x - p1.x;
-    let dy = p2.y - p1.y;
-    let mut xi = 1.;
-    if dx < 0. {
-        xi = -1.;
-        dx = -dx;
-    }
-    let mut d = 2. * dx - dy;
-    let mut x = p1.x;
-
-    for y in linspace::<f32>(p1.y, p2.y, 10) {
-        // println!("{}-{}:{}; Y:{}", p1.x, p2.x, x, y);
-        match (x, y) {
-            (x, y) if x + 0.1 >= ib.width() as f32 || y + 0.1 >= ib.height() as f32 => {
-                continue;
-            }
-            _ => (),
-        }
-        assign_pixel(ib, x, y);
-
-        if d > 0. {
-            x = x + xi;
-            d = d - 2. * dy;
-        }
-        d = d + 2. * dx
+impl From<Image> for ImageBuffer<Rgb<u8>, Vec<u8>> {
+    fn from(image: Image) -> ImageBuffer<Rgb<u8>, Vec<u8>> {
+        image.0
     }
 }
 
-pub fn plot_line_low(ib: &mut ImageBuffer<Rgb<u8>, Vec<u8>>, p1: &Point2, p2: &Point2) {
-    let dx = p2.x - p1.x;
-    let mut dy = p2.y - p1.y;
-    let mut yi = 1.;
-    if dy < 0. {
-        yi = -1.;
-        dy = -dy;
+impl Image {
+    /// Get reference to the inner image buffer
+    pub fn buf(&self) -> &ImageBuffer<Rgb<u8>, Vec<u8>> {
+        &self.0
     }
-    let mut d = 2. * dy - dx;
-    let mut y = p1.y;
 
-    for x in linspace(p1.x, p2.x, 10) {
-        // println!("{}-{}:{}; Y:{}", p1.x, p2.x, x, y);
-        match (x, y) {
-            (x, y) if x + 0.1 >= ib.width() as f32 || y + 0.1 >= ib.height() as f32 => {
-                continue;
-            }
-            _ => (),
-        }
-
-        assign_pixel(ib, x, y);
-
-        if d > 0. {
-            y = y + yi;
-            d = d - 2. * dx;
-        }
-        d = d + 2. * dy
+    /// Get inner image buffer as mutable
+    pub fn buf_mut(&mut self) -> &mut ImageBuffer<Rgb<u8>, Vec<u8>> {
+        &mut self.0
     }
+
+    pub fn line(&mut self, p1: &Point2, p2: &Point2) {
+        let (p1, p2) = (p1.into(), p2.into());
+        let pix = line_drawing::XiaolinWu::<f32, i32>::new(p1, p2);
+        for ((x, y), value) in pix {
+            self.assign_pixel(x, y, value);
+        }
+    }
+
+    pub fn assign_pixel(&mut self, x: i32, y: i32, intensity: f32) {
+        let pixel = self.buf_mut().get_pixel_mut(x as u32, y as u32);
+        // Reverse to make black default value
+        // TODO: support different colors
+        let value = (255.0 - intensity * 255.0) as u8;
+        *pixel = Rgb([value; 3]);
+    }
+
+    // /// Xiaolin Wu`s naive implementation of line drawing with antialiasing
+    // pub fn line_antialised(ib: &mut ImageBuffer<Rgb<u8>, Vec<u8>>, p1: &Point2, p2: &Point2) {
+    //     let steep = (p2.y - p1.x).abs() > (p2.x - p1.x).abs();
+
+    // }
 }
-
-pub fn assign_pixel(ib: &mut ImageBuffer<Rgb<u8>, Vec<u8>>, x: f32, y: f32) {
-    // Mutating single pixel
-    // println!("x:{}, y:{}", x, y);
-    let pixel = ib.get_pixel_mut(x as u32, y as u32);
-    // let data = (*pixel as Rgb<u8>).0;
-    *pixel = Rgb([0.0 as u8, 0.0 as u8, 0.0 as u8]);
-}
-
-// /// Xiaolin Wu`s naive implementation of line drawing with antialiasing
-// pub fn line_antialised(ib: &mut ImageBuffer<Rgb<u8>, Vec<u8>>, p1: &Point2, p2: &Point2) {
-//     let steep = (p2.y - p1.x).abs() > (p2.x - p1.x).abs();
-
-// }
