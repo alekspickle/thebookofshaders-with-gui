@@ -8,5 +8,6 @@
 ### Currently I ported:
 - tiled lines(with simplified Bresenham algoritm implementation)
 
-TODO:
+#### WIP:
+- joy division (pulsar visualization)
 - flickering(some mouse dependent shiny octopus stuff)(my idea)
