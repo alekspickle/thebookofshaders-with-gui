@@ -1,7 +1,10 @@
 use image::{ImageBuffer, Rgb};
+use rand::{
+    distributions::{Distribution, Uniform},
+    thread_rng,
+};
 use std::{path::Path, time::Instant};
 use utils::{Line, Point2};
-use rand::{thread_rng, distributions::{Uniform, Distribution}};
 
 fn main() {
     let start = Instant::now();
@@ -16,7 +19,9 @@ fn main() {
 
     // Iterate over the coordinates and pixels of the image
     // to set basic background color
+    // @scale - make it kind of responsive to resize i guess
     let scale = 0.55 + (step as f32) / (imgbuf.width() + imgbuf.height()) as f32;
+    println!("Scale:{}", scale);
     for (x, y, pixel) in imgbuf.enumerate_pixels_mut() {
         let r = (0.1 * (x as f32).powf(scale) * (y as f32).powf(scale)) as u8;
         let g = (0.9 * (x as f32).powf(scale) * (y as f32).powf(scale)) as u8;
@@ -25,41 +30,48 @@ fn main() {
     }
 
     // Iterate over the coordinates and pixels of the image
-    let horiz: Vec<i32> = imgbuf
+    let mut horiz: Vec<i32> = imgbuf
         .clone()
         .enumerate_pixels_mut()
+        // .step_by(step as usize)
+        // .filter(|(_, y, _)| *y as i32 % step == 0)
         .map(|(x, _, _)| x as i32)
-        .take_while(|x| *x < imgbuf.width() as i32)
-        .step_by(step as usize)
+        .take_while(|x| *x <= (imgbuf.width() as i32))
         .collect();
     let mut vert: Vec<i32> = imgbuf
         .clone()
         .enumerate_pixels_mut()
+        // .step_by(step as usize)
+        // .filter(|(x, _, _)| *x as i32 % step == 0)
         .map(|(_, y, _)| y as i32)
-        .take_while(|y| *y < imgbuf.height() as i32)
-        .step_by(step as usize)
+        .take_while(|y| *y <= (imgbuf.height() as i32))
         .collect();
-
     // Dedup vector of y, because the image iterator takes pixel/per iteration
     vert.dedup_by(|a, b| a == b);
-    // let mut zipped: Vec<(i32, i32)> = horiz
-    //     .into_iter()
-    //     .zip(vert.into_iter())
-    //     .take_while(|(x, y)| *x < imgbuf.width() as i32 && *y < imgbuf.height() as i32)
-    //     .collect();
+    // horiz.dedup_by(|a, b| a == b);
+    print!("{:?}", vert);
 
     let mut lines: Vec<Line> = Vec::new();
     let rng = thread_rng();
     let range = Uniform::new_inclusive(0, 10);
-    for i in horiz.iter() {
+    for &i in vert.iter().step_by(step as usize) {
         let mut line = Vec::new();
-        for j in vert.iter() {
+        for j in horiz.iter() {
             // TODO: random points
             let mut r = range.sample_iter(rng).next().unwrap();
-            line.push(Point2::new(*j, *i));
+
+            // array bounds corner case guard
+            let new_y = if i + r < imgbuf.height() as i32 {
+                i 
+            } else {
+                i
+            };
+
+            line.push(Point2::new(*j, new_y));
         }
         lines.push(Line::new(line))
     }
+    println!("\n{} lines", lines.len());
 
     for l in lines.iter() {
         let p0 = &l.points[0];

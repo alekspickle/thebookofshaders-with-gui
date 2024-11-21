@@ -57,12 +57,12 @@ pub fn line(ib: &mut ImageBuffer<Rgb<u8>, Vec<u8>>, p1: &Point2, p2: &Point2) {
         // (p1, p2) if p2.y == p1.y => plot_line_horizontal(ib, p1, p2),
         // // vertical case
         // (p1, p2) if p2.x == p1.x => plot_line_vertical(ib, p1, p2),
-        // going down
+        // going upside down
         (p1, p2) if (p2.y - p1.y).abs() < (p2.x - p1.x).abs() => match (p1, p2) {
             (p1, p2) if p1.x > p2.x => plot_line_low(ib, p2, p1),
             _ => plot_line_low(ib, p1, p2),
         },
-        // going up
+        // going downside up
         _ => match (p1, p2) {
             (p1, p2) if p1.y > p2.y => plot_line_high(ib, p2, p1),
             _ => plot_line_high(ib, p1, p2),
@@ -152,6 +152,7 @@ pub fn plot_line_horizontal(ib: &mut ImageBuffer<Rgb<u8>, Vec<u8>>, p1: &Point2,
 
 pub fn assign_pixel(ib: &mut ImageBuffer<Rgb<u8>, Vec<u8>>, x: i32, y: i32) {
     // Mutating single pixel
+    // println!("x:{}, y:{}", x, y);
     let pixel = ib.get_pixel_mut(x as u32, y as u32);
     // let data = (*pixel as Rgb<u8>).0;
     *pixel = Rgb([0.0 as u8, 0.0 as u8, 0.0 as u8]);
