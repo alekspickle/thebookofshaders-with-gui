@@ -1,6 +1,5 @@
-//! [video](https://www.youtube.com/watch?v=m9joBL&OZVEo)
-//!
-//! Inspired by the labyrinth on Commodore64 [in this video](video)
+//! Inspired by the maze on Commodore64 in the video where it is
+//! created by 10 lines of basic.
 //! It's not the same, but I like it better
 //!
 
@@ -19,7 +18,7 @@ fn main() {
     let mut rng = rand::thread_rng();
     let step = rng.gen_range(5, DIM / 3);
     println!(
-        "Building labyrinth ({}x{})...\nStep:{}.",
+        "Building a maze ({}x{})...\nStep:{}.",
         buf.width(),
         buf.height(),
         step

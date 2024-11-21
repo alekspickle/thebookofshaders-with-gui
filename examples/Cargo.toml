@@ -22,8 +22,8 @@ name = "basic"
 path = "src/basic.rs"
 
 [[example]]
-name = "labyrinth"
-path = "src/labyrinth.rs"
+name = "maze"
+path = "src/maze.rs"
 
 [[example]]
 name = "joy_division"
