@@ -1,6 +1,7 @@
 use image::{ImageBuffer, Rgb};
 use std::{path::Path, time::Instant};
 use utils::{Line, Point2};
+use rand::{thread_rng, distributions::{Uniform, Distribution}};
 
 fn main() {
     let start = Instant::now();
@@ -48,9 +49,13 @@ fn main() {
     //     .collect();
 
     let mut lines: Vec<Line> = Vec::new();
+    let rng = thread_rng();
+    let range = Uniform::new_inclusive(0, 10);
     for i in horiz.iter() {
         let mut line = Vec::new();
         for j in vert.iter() {
+            // TODO: random points
+            let mut r = range.sample_iter(rng).next().unwrap();
             line.push(Point2::new(*j, *i));
         }
         lines.push(Line::new(line))

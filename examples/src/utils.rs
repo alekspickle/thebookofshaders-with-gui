@@ -52,18 +52,21 @@ pub fn print_italic(s: &str) {
 //
 // https://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm
 pub fn line(ib: &mut ImageBuffer<Rgb<u8>, Vec<u8>>, p1: &Point2, p2: &Point2) {
-    if (p2.y - p1.y) < (p2.x - p1.x).abs() {
-        if p1.x > p2.x {
-            plot_line_low(ib, p2, p1)
-        } else {
-            plot_line_low(ib, p1, p2)
-        }
-    } else {
-        if p1.y > p2.y {
-            plot_line_high(ib, p2, p1)
-        } else {
-            plot_line_high(ib, p1, p2)
-        }
+    match (p1, p2) {
+        // // horizontal case
+        // (p1, p2) if p2.y == p1.y => plot_line_horizontal(ib, p1, p2),
+        // // vertical case
+        // (p1, p2) if p2.x == p1.x => plot_line_vertical(ib, p1, p2),
+        // going down
+        (p1, p2) if (p2.y - p1.y).abs() < (p2.x - p1.x).abs() => match (p1, p2) {
+            (p1, p2) if p1.x > p2.x => plot_line_low(ib, p2, p1),
+            _ => plot_line_low(ib, p1, p2),
+        },
+        // going up
+        _ => match (p1, p2) {
+            (p1, p2) if p1.y > p2.y => plot_line_high(ib, p2, p1),
+            _ => plot_line_high(ib, p1, p2),
+        },
     }
 }
 
@@ -97,6 +100,42 @@ pub fn plot_line_low(ib: &mut ImageBuffer<Rgb<u8>, Vec<u8>>, p1: &Point2, p2: &P
         yi = -1;
         dy = -dy;
     }
+    let mut d = 2 * dy - dx;
+    let mut y = p1.y;
+
+    for x in p1.x..p2.x {
+        assign_pixel(ib, x, y);
+
+        if d > 0 {
+            y = y + yi;
+            d = d - 2 * dx;
+        }
+        d = d + 2 * dy
+    }
+}
+
+pub fn plot_line_vertical(ib: &mut ImageBuffer<Rgb<u8>, Vec<u8>>, p1: &Point2, p2: &Point2) {
+    let mut dx = 0;
+    let dy = p2.y - p1.y;
+    let mut xi = 1;
+    let mut d = 2 * dx - dy;
+    let mut x = p1.x;
+
+    for y in p1.y..p2.y {
+        assign_pixel(ib, x, y);
+
+        if d > 0 {
+            x = x + xi;
+            d = d - 2 * dy;
+        }
+        d = d + 2 * dx
+    }
+}
+
+pub fn plot_line_horizontal(ib: &mut ImageBuffer<Rgb<u8>, Vec<u8>>, p1: &Point2, p2: &Point2) {
+    let dx = p2.x - p1.x;
+    let mut dy = 0;
+    let mut yi = 1;
     let mut d = 2 * dy - dx;
     let mut y = p1.y;
 
