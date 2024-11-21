@@ -23,18 +23,19 @@ fn main() {
     let mut imgbuf = ImageBuffer::new(500, 500);
     let step: i32 = 50;
     println!(
-        "Juggling pixels...\nWidth:{}-Height:{}.\nStep:{}.",
+        "Juggling pixels ({}x{})...\nStep:{}.",
         imgbuf.width(),
         imgbuf.height(),
         step
     );
-
+    
     // Iterate over the coordinates and pixels of the image
     // to set basic background color
+    let scale = 0.55 + (step as f32) / (imgbuf.width() + imgbuf.height()) as f32;
     for (x, y, pixel) in imgbuf.enumerate_pixels_mut() {
-        let r = (0.1 * (x as f32).powf(0.55) * (y as f32).powf(0.55)) as u8;
-        let g = (0.9 * (x as f32).powf(0.55) * (y as f32).powf(0.55)) as u8;
-        let b = (0.7 * (x as f32).powf(0.55) * (y as f32).powf(0.55)) as u8;
+        let r = (0.1 * (x as f32).powf(scale) * (y as f32).powf(scale)) as u8;
+        let g = (0.9 * (x as f32).powf(scale) * (y as f32).powf(scale)) as u8;
+        let b = (0.7 * (x as f32).powf(scale) * (y as f32).powf(scale)) as u8;
         *pixel = Rgb([r, g, b]);
     }
 
@@ -49,9 +50,10 @@ fn main() {
         .map(|(_, y, _)| y as i32)
         .step_by(step as usize)
         .collect();
+
+    // Dedup vector of y, because the image iterator takes pixel/per iteration    
     vert.dedup_by(|a, b| a == b);
     let zipped = horiz.iter().zip(vert.iter());
-    // println!("{:?}", vert);
 
     for (x, y) in zipped {
         // if x < &(imgbuf.width() as i32) && y < &(imgbuf.height() as i32) {
@@ -60,7 +62,6 @@ fn main() {
         draw(&mut imgbuf, *x, *y, step, step);
         // }
     }
-    // line(&mut imgbuf, Point2::new(25, 25), Point2::new(50, 50));
 
     utils::save_image(imgbuf, Path::new("examples/outputs/lines.png"));
     println!("Time taken: {:?}", start.elapsed());
